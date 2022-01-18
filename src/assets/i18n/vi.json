@@ -1,0 +1,10 @@
+{
+    "pharmacy": {
+        "activate": "Đang hoạt động",
+        "block": "Vô hiệu hoá",
+        "inactivate": "Không hoạt động",
+        "add": "Thêm",
+        "delete": "Xoá",
+        "exportFile": "Xuất file"
+    }
+}

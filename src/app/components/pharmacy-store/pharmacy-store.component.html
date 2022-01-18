@@ -1,0 +1,139 @@
+<div class="grid pharmacy-store">
+    <div class="col-12">
+        <div class="card">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="{{ 'pharmacy.add' | translate }}" icon="pi pi-plus"
+                                class="p-button-success mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label="{{ 'pharmacy.delete' | translate }}" icon="pi pi-trash"
+                                class="p-button-danger" (click)="deleteSelectedProducts()"
+                                [disabled]="!selectedProducts || !selectedProducts.length"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+                    <button pButton pRipple label="{{ 'pharmacy.exportFile' | translate }}" icon="pi pi-upload"
+                            class="p-button-help" (click)="dt.exportCSV()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="pharmacies" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                     [globalFilterFields]="['name','country.name','representative.name','status']" [rows]="10"
+                     [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                     [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Manage Products</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                   placeholder="Search..."/>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="name">Tên cơ sở
+                            <p-sortIcon field="name"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="address">Địa chỉ
+                            <p-sortIcon field="address"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="dateCreated">Ngày tạo
+                            <p-sortIcon field="dateCreated"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="status">Trạng thái
+                            <p-sortIcon field="status"></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-pharmacy>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="pharmacy"></p-tableCheckbox>
+                        </td>
+                        <td style="width:20%;">
+                            <span class="p-column-title">Tên cơ sở</span>
+                            {{pharmacy.name}}
+                        </td>
+                        <td style="width:40%;">
+                            <span class="p-column-title">Địa chỉ</span>
+                            {{pharmacy.address}}
+                        </td>
+                        <td style="width:15%;">
+                            <span class="p-column-title">Ngày tạo</span>
+                            {{pharmacy.dateCreated | date: 'dd/MM/yyy'}}
+                        </td>
+                        <td style="width:10%;"><span class="p-column-title">Trạng thái</span>
+                            <span
+                                [class]="'pharmacy-' + pharmacy.status.toLowerCase()">{{ 'pharmacy.activate' | translate }}</span>
+                        </td>
+                        <td style="width:15%;">
+                            <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+                                    (click)="editProduct(pharmacy)"></button>
+                            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
+                                    (click)="deleteProduct(pharmacy)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="pharmacyDialog" [style]="{width: '700px'}" header="Thông tin nhà thuốc" [modal]="true"
+                  class="p-fluid">
+            <ng-template pTemplate="content">
+                <img [src]="" width="150" class="mt-0 mx-auto mb-5 block shadow-2" *ngIf="pharmacy.image">
+                <div class="field">
+                    <label for="name">Tên cơ sở</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="pharmacy.name" required autofocus
+                           [ngClass]="{'ng-invalid ng-dirty' : submitted && !pharmacy.name}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !pharmacy.name">Name is required.</small>
+                </div>
+                <div class="field">
+                    <label for="description">Địa chỉ</label>
+                    <textarea id="description" pInputTextarea [(ngModel)]="pharmacy.address" required rows="3"
+                              cols="20"></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="dateCreated">Ngày tạo</label>
+                    <input disabled type="text" pInputText id="dateCreated"
+                           value="{{pharmacy.dateCreated | date:'hh:mm dd/MM/yyyy' }}"/>
+                </div>
+
+                <div class="field">
+                    <label for="status">Trạng thái</label>
+                    <input type="text" pInputText id="status" [(ngModel)]="pharmacy.status"/>
+                </div>
+
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
+                        (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text"
+                        (click)="saveProduct()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="pharmacy">Are you sure you want to delete <b>{{pharmacy.name}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                        (click)="deleteProductDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"></button>
+            </ng-template>
+        </p-dialog>
+
+    </div>
+</div>

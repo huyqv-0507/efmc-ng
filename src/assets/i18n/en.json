@@ -1,0 +1,10 @@
+{
+    "pharmacy": {
+        "activate": "Activate",
+        "block": "Block",
+        "inactivate": "Inactivate",
+        "add": "Add",
+        "delete": "Delete",
+        "exportFile": "Export"
+    }
+}

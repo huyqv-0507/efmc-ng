@@ -1,0 +1,27 @@
+.wrapper-login {
+    position: absolute;
+    top: 50%;
+    height: 500px;
+    margin-top: -250px; /* Half of the height */
+    left: 50%;
+    width: 800px;
+    margin-left: -400px; /* Half of the width */
+    padding: 10px;
+    -webkit-box-shadow: 0px 0px 7px 0px #4E4E4E;
+
+    .wrapper-login-layout {
+        height: 100%;
+
+        .wrapper-login-layout-intro {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wrapper-login-layout-form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}
